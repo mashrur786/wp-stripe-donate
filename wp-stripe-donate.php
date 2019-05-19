@@ -17,6 +17,9 @@ if( ! defined ('WPINC') ){
 }
 
 define( 'WPSD_VERSION', '1.0.0' );
+define( 'WPSD_PATH', plugin_dir_path( __FILE__ ) );
+define( 'WPSD_URL', plugin_dir_url( __FILE__ ) );
+
 
 
 register_activation_hook( __FILE__, 'activate_plugin' );
@@ -39,6 +42,15 @@ Class WPStripeDonate {
         add_action('admin_init', array( $this, 'register_plugin_settings'));
         /* with admin_menu hook,  */
         add_action('admin_menu', array( $this, 'add_to_admin_menu'));
+        /* Load jquery if not loaded already */
+        add_action( 'wp_enqueue_scripts', array( $this,'enqueue_scripts') );
+        /* register stripe donation form shortcode */
+        add_shortcode('wpStripeDonate', array( $this, 'shortcode'));
+        // Register style sheet.
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
+
+        /* Hangle stripe donation form submission */
+        add_action('admin_post_handle_stripe_donation', array( $this, 'handle_stripe_donation'));
 
 
     }
@@ -77,6 +89,8 @@ Class WPStripeDonate {
              'wp-stripe-donation', //page name (same as the do_settings_sections function call).
              'wpsd-settings_section' //The fifth is the id of the settings section that this goes into (same as the first argument to add_settings_section).
          );
+
+
 
     }
 
@@ -123,9 +137,37 @@ Class WPStripeDonate {
     }
 
 
+    public function shortcode(){
+        wp_enqueue_style( 'wpsd-form-styles' );
+        wp_enqueue_script ( 'wpsd-jquery');
+        ob_start();
+        include_once('public/shortcode.php');
+        return ob_get_clean();
+
+    }
+
+    public function enqueue_scripts(){
+        if( ! is_admin() ) {
+
+        }
+    }
+
+    public function handle_stripe_donation(){
+        die(var_dump($_POST));
+    }
+
+    /**
+	 * Register and enqueue style sheet.
+	 */
+	public function register_plugin_styles() {
+		wp_register_style( 'wpsd-form-styles', WPSD_URL .'public/css/style.css' );
+		wp_register_script( 'wpsd-jquery', 'https://code.jquery.com/jquery-3.4.1.slim.min.js' );
+
+	}
 
 
 }
+
 
 
 
