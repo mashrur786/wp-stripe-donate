@@ -3,6 +3,11 @@
 <?php  } ?>
 <div id="error-message"></div>
 <form id="frmStripePayment" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+     <div class="field-row">
+        <label>Donation Amount</label>
+        <span id="donation-amount" class="info"></span><br>
+        <input type="number" id="name" name="amount" class="demoInputBox">
+    </div>
     <div class="field-row">
         <label>Card Holder Name</label>
         <span id="card-holder-name-info" class="info"></span><br>
@@ -54,13 +59,10 @@
             <img alt="loader" src="<?php echo WPSD_URL ?>/public/img/ajax-loader.gif">
         </div>
     </div>
-    <input type='hidden' name='amount' value='0.5'>
-    <input type='hidden' name='currency_code' value='USD'>
-    <input type='hidden' name='item_name' value='Test Product'>
-    <input type='hidden' name='item_number' value='MASHRUR#786'>
-    <input type="hidden"
-           name="handle_stripe_donation_nonce"
-           value="<?php wp_create_nonce( 'handle_stripe_donation_nonce' ) ?>">
+    <input type='hidden' name='currency_code' value='GBP'>
+    <input type='hidden' name='item_name' value='Donation'>
+    <input type='hidden' name='item_number' value='786'>
+    <?php wp_nonce_field( 'handle_stripe_donation', 'handle_stripe_donation_nonce' ); ?>
     <input type="hidden" name="action" value="handle_stripe_donation">
 </form>
 <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
@@ -99,7 +101,6 @@ function cardValidation () {
     if(valid == false) {
         $("#error-message").html("All Fields are required").show();
     }
-
     return valid;
 }
 //set your publishable key
